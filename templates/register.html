@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — Create account</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --line:#E9E1CF;
+    --error-bg:#FDECEA; --error-text:#B3261E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:440px;margin:0 auto;padding:30px 22px 42px;}
+
+  .home{font-size:14px;color:var(--muted);text-decoration:none;font-weight:500;}
+  .logo{text-align:center;font-size:44px;font-weight:700;letter-spacing:-1.5px;margin-top:26px;}
+  h1{text-align:center;font-size:24px;font-weight:600;margin-top:14px;}
+  .sub{text-align:center;color:var(--muted);font-size:14.5px;margin:6px 0 26px;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:20px;padding:24px 22px;
+  }
+  .error{
+    background:var(--error-bg);color:var(--error-text);
+    border-radius:12px;padding:12px 14px;font-size:14px;
+    font-weight:500;margin-bottom:18px;
+  }
+  label{display:block;font-size:14px;font-weight:600;margin:0 0 8px 2px;}
+  .hint{font-weight:400;color:var(--muted);font-size:12.5px;}
+  input, select{
+    width:100%;font-family:inherit;font-size:16px;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line);border-radius:14px;
+    padding:14px 16px;margin-bottom:20px;outline:none;
+  }
+  input:focus, select:focus{border-color:var(--ink);}
+  select{
+    appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231B1710' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 16px center;
+  }
+  button{
+    width:100%;font-family:inherit;font-size:17px;font-weight:600;
+    background:var(--accent);color:#fff;border:none;cursor:pointer;
+    border-radius:16px;padding:16px;
+  }
+  .below{text-align:center;margin-top:24px;font-size:14.5px;color:var(--muted);}
+  .below a{color:var(--ink);font-weight:600;text-decoration:none;}
+  .below a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="home" href="/">← Home</a>
+
+  <div class="logo">pullup</div>
+  <h1>Create your account</h1>
+  <p class="sub">You only do this once.</p>
+
+  <div class="card">
+    <form method="POST" action="/register">
+      {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+      <label>Full name</label>
+      <input type="text" name="name" required>
+
+      <label>ID number <span class="hint">(student or staff ID)</span></label>
+      <input type="text" name="id_number" required>
+
+      <label>I am a</label>
+      <select name="role">
+        <option>Student</option>
+        <option>Teacher</option>
+      </select>
+
+      <label>Teacher code <span class="hint">(teachers only — students leave empty)</span></label>
+      <input type="text" name="teacher_code">
+
+      <label>Password</label>
+      <input type="password" name="password" required>
+
+      <button type="submit">Create account</button>
+    </form>
+  </div>
+
+  <div class="below">Already have an account? <a href="/login">Log in</a></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!-- pullup - Teacher page: start a class + list of your classes -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — Teacher</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --green-bg:#E7F3E7; --line:#E9E1CF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:22px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:700px;margin:0 auto;}
+
+  /* top bar: wordmark, your name, log out */
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .logo{font-size:30px;font-weight:700;letter-spacing:-1px;}
+  .who{font-size:14.5px;color:var(--muted);}
+  .who a{color:var(--ink);font-weight:600;text-decoration:none;margin-left:16px;}
+  .who a:hover{text-decoration:underline;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:20px;padding:24px 22px;margin-bottom:20px;
+  }
+  h2{font-size:20px;font-weight:600;margin-bottom:6px;}
+
+  label{display:block;font-size:14px;font-weight:600;margin:16px 0 8px 2px;}
+  input[type="text"], input[type="number"]{
+    width:100%;font-family:inherit;font-size:16px;color:var(--ink);
+    background:#fff;border:1.5px solid var(--line);border-radius:14px;
+    padding:13px 16px;outline:none;
+  }
+  input:focus{border-color:var(--ink);}
+  input::placeholder{color:#B4AC99;}
+
+  /* the "in the class" checkbox row */
+  .checkrow{display:flex;align-items:flex-start;gap:12px;margin-top:20px;}
+  .checkrow input{width:21px;height:21px;margin-top:2px;accent-color:var(--accent);flex-shrink:0;}
+  .checkrow .t{font-size:15px;font-weight:500;}
+  .checkrow small{color:var(--muted);display:block;margin-top:4px;font-size:13px;line-height:1.5;}
+
+  .btn{
+    display:inline-block;font-family:inherit;background:var(--accent);color:#fff;
+    border:none;padding:14px 28px;border-radius:14px;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;margin-top:22px;
+  }
+  .btn-small{padding:9px 18px;font-size:14px;border-radius:12px;margin-top:12px;}
+  .btn-ink{background:var(--ink);}
+  .btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
+
+  .classrow{padding:18px 0;}
+  .classrow + .classrow{border-top:1px solid var(--line);}
+  .ctitle{font-size:17px;font-weight:600;}
+  .pill{
+    display:inline-block;font-size:12.5px;font-weight:600;
+    padding:3px 11px;border-radius:999px;margin-left:8px;vertical-align:2px;
+  }
+  .pill-live{background:var(--green-bg);color:var(--green);}
+  .pill-ended{background:#F0EADB;color:var(--muted);}
+  .counts{color:var(--muted);font-size:14px;margin-top:5px;}
+  .empty{color:var(--muted);font-size:14.5px;padding-top:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- top bar: logo, your name, log out -->
+  <div class="topbar">
+    <div class="logo">pullup</div>
+    <div class="who">
+      <span>{{ user["name"] }}</span>
+      <a href="/logout">Log out</a>
+    </div>
+  </div>
+
+  <!-- start a new class -->
+  <div class="card">
+    <h2>Start a class</h2>
+    <form method="POST" action="/class/start">
+      <label>Class name</label>
+      <input type="text" name="title" placeholder="e.g. Math" required>
+
+      <label>Late after (minutes)</label>
+      <input type="number" name="late_minutes" value="10" min="0" required>
+
+      <!-- the "in the class" check for this class -->
+      <div class="checkrow">
+        <input type="checkbox" name="in_class_only" value="1" checked>
+        <div>
+          <span class="t">Only students in the class can check in</span>
+          <small>Students on this class Wi-Fi pass automatically. Anyone else waits for your approval on the board page.</small>
+        </div>
+      </div>
+
+      <button class="btn" type="submit">Start class</button>
+    </form>
+  </div>
+
+  <!-- your classes so far -->
+  <div class="card">
+    <h2>My classes</h2>
+    {% for c in classes %}
+      <div class="classrow">
+        <span class="ctitle">{{ c["title"] }}</span>
+        {% if c["active"] %}
+          <span class="pill pill-live">● Live</span>
+        {% else %}
+          <span class="pill pill-ended">Ended</span>
+        {% endif %}
+        <div class="counts">
+          Started {{ c["start_time"] }} · {{ c["present"] }} present · {{ c["late"] }} late
+        </div>
+        {% if c["active"] %}
+          <a class="btn btn-small btn-ink" href="/class/{{ c['id'] }}/board">Board</a>
+        {% endif %}
+        <a class="btn btn-small btn-outline" href="/class/{{ c['id'] }}/report">Report</a>
+      </div>
+    {% else %}
+      <p class="empty">No classes yet. Start your first class above.</p>
+    {% endfor %}
+  </div>
+
+</div>
+</body>
+</html>

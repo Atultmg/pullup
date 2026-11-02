@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}PULLUP{% endblock %}</title>
+
+    <style>
+        /* colors used everywhere */
+        :root {
+            --bg: #111827;
+            --card: #1f2937;
+            --line: #374151;
+            --muted: #9ca3af;
+            --lime: #b8e04a;
+            --amber: #fbbf24;
+            --red: #f87171;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        /* top bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--line);
+        }
+        nav a { color: var(--muted); text-decoration: none; margin-left: 16px; }
+        nav a.brand { color: var(--lime); font-weight: bold; font-size: 20px; margin: 0; }
+
+        /* page content, centered */
+        main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        h1 { margin: 0 0 8px; }
+        .green { color: var(--lime); }
+        .muted { color: var(--muted); }
+
+        /* grey box */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 20px;
+            margin: 20px auto;
+        }
+
+        /* forms */
+        form.stack { max-width: 340px; margin: 24px auto; text-align: left; }
+        label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 14px; }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: white;
+            font-size: 16px;
+        }
+        .error { color: var(--red); margin-bottom: 14px; }
+
+        /* buttons */
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            margin: 6px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            text-decoration: none;
+            border: 2px solid var(--lime);
+            color: var(--lime);
+            background: transparent;
+            cursor: pointer;
+        }
+        .btn-primary { background: var(--lime); color: var(--bg); }
+        .btn-danger { border-color: var(--red); color: var(--red); }
+        form.stack .btn { width: 100%; margin: 6px 0 0; }
+
+        /* tables scroll sideways on small phones */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; font-size: 15px; }
+        th { color: var(--lime); }
+
+        /* Present and Late labels */
+        .badge { padding: 3px 12px; border-radius: 99px; font-size: 14px; font-weight: bold; }
+        .Present { background: rgba(184, 224, 74, 0.15); color: var(--lime); }
+        .Late { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
+        .Live { background: rgba(184, 224, 74, 0.15); color: var(--lime); }
+        .Ended { background: rgba(156, 163, 175, 0.15); color: var(--muted); }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a class="brand" href="/">⚡ PULLUP</a>
+        <div>
+            {% if user %}
+                <span class="muted">{{ user["name"] }}</span>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/logout">Log out</a>
+            {% else %}
+                <a href="/login">Log in</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

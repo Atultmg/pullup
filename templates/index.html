@@ -1,0 +1,94 @@
+<!-- pullup - Homepage: landing page (and a welcome-back view when logged in) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — QR class attendance</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --line:#E9E1CF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:36px 22px 28px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:440px;margin:0 auto;}
+  .logo{font-size:56px;font-weight:700;letter-spacing:-2.5px;line-height:1;}
+  .tag{font-size:12px;letter-spacing:2.5px;color:var(--muted);font-weight:500;margin-top:8px;}
+
+  h1{font-size:31px;font-weight:600;line-height:1.25;letter-spacing:-.5px;margin-top:38px;}
+  .sub{color:var(--muted);font-size:16.5px;line-height:1.55;margin-top:12px;}
+
+  .btn{
+    display:block;text-align:center;text-decoration:none;
+    padding:17px;border-radius:16px;font-size:17px;font-weight:600;margin-top:14px;
+  }
+  .btn-accent{background:var(--accent);color:#fff;}
+  .btn-ink{background:var(--ink);color:#fff;}
+  .btn-line{border:1.5px solid var(--ink);color:var(--ink);}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px;margin-top:30px;
+  }
+  .card h3{font-size:12px;letter-spacing:2px;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .step{display:flex;gap:16px;padding:13px 0;align-items:baseline;}
+  .step + .step{border-top:1px solid var(--line);}
+  .num{font-weight:700;color:var(--accent);font-size:15px;min-width:26px;}
+  .step b{display:block;font-size:16px;font-weight:600;}
+  .step span{color:var(--muted);font-size:14px;line-height:1.45;}
+
+  .welcome{margin-top:38px;}
+  .welcome h1{margin-top:0;}
+  .account{text-align:center;margin-top:26px;color:var(--muted);font-size:15px;}
+  .account a{color:var(--ink);font-weight:600;text-decoration:none;}
+  .account a:hover{text-decoration:underline;}
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo">pullup</div>
+  <div class="tag">QR CLASS ATTENDANCE</div>
+
+  {% if user %}
+  <!-- logged in: welcome back + straight to your dashboard -->
+  <div class="welcome">
+    <h1>Welcome back, {{ user["name"].split()[0] }}.</h1>
+    <p class="sub">You're logged in. Jump straight to your dashboard.</p>
+    <a class="btn btn-ink" href="/dashboard">Go to my dashboard</a>
+    <p class="account"><a href="/logout">Log out</a></p>
+  </div>
+
+  {% else %}
+  <!-- logged out: the landing page -->
+  <h1>Class attendance,<br>made simple.</h1>
+  <p class="sub">Teachers show a QR code. Students scan it with their phone camera. Attendance is recorded — no registers, no roll calls.</p>
+
+  <a class="btn btn-accent" href="/login">I'm a Student</a>
+  <a class="btn btn-line" href="/login">I'm a Teacher</a>
+
+  <div class="card">
+    <h3>HOW IT WORKS</h3>
+    <div class="step"><div class="num">01</div><div><b>Scan</b><span>The teacher puts a QR code on the board. Students scan it with their phone camera.</span></div></div>
+    <div class="step"><div class="num">02</div><div><b>Marked Present or Late</b><span>Check-in is instant and timed, so latecomers are marked Late automatically.</span></div></div>
+    <div class="step"><div class="num">03</div><div><b>Reports in one tap</b><span>The teacher ends the class and downloads a clean attendance report.</span></div></div>
+  </div>
+
+  <p class="account"><a href="/login">Log in</a> &nbsp;·&nbsp; <a href="/register">Create account</a></p>
+  {% endif %}
+
+  <p class="foot">pullup · Scan. Check. Present.</p>
+
+</div>
+</body>
+</html>

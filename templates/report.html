@@ -1,0 +1,115 @@
+<!-- pullup - Report page: one class's attendance + CSV download -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — Report</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --green-dark:#35704A; --line:#E9E1CF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:22px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:700px;margin:0 auto;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+  .logo{font-size:28px;font-weight:700;letter-spacing:-1px;}
+  .topbar a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;}
+  .topbar a:hover{text-decoration:underline;}
+
+  h1{font-size:28px;font-weight:600;}
+  .muted{color:var(--muted);font-size:14.5px;line-height:1.5;}
+  .sub{margin:4px 0 16px 0;}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px;margin-top:20px;
+  }
+
+  /* the buttons */
+  .btn{
+    display:inline-block;padding:13px 22px;border-radius:14px;font-weight:600;
+    text-decoration:none;font-size:15px;border:1.5px solid var(--ink);color:var(--ink);
+  }
+  .btn-primary{background:var(--ink);color:#fff;margin-right:8px;}
+
+  /* attendance table */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;}
+  th{
+    text-align:left;color:var(--muted);font-weight:500;font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.6px;padding:4px 10px 12px 0;
+  }
+  td{padding:12px 10px 12px 0;border-top:1px solid var(--line);white-space:nowrap;}
+  td:last-child, th:last-child{padding-right:0;}
+
+  /* status pills — the class name is the status text itself */
+  .badge{
+    display:inline-block;padding:4px 12px;border-radius:999px;
+    font-size:12.5px;font-weight:600;
+  }
+  .Present{background:#E4F0E4;color:var(--green-dark);}
+  .Late{background:#FFE8E0;color:var(--accent);}
+  .Waiting{background:#FFF3D6;color:#8A5A0B;}
+  .Live{background:#E4F0E4;color:var(--green-dark);}
+  .Ended{background:#EFEAE0;color:var(--muted);}
+  .counts .badge{font-size:14px;padding:6px 14px;margin-right:6px;}
+  .backlink{margin-top:22px;}
+  .backlink a{color:var(--muted);text-decoration:none;font-size:14.5px;}
+  .backlink a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="logo">pullup</div>
+    <a href="/teacher">← All classes</a>
+  </div>
+
+  <h1>{{ c["title"] }}</h1>
+  <p class="muted sub">Started {{ c["start_time"][:16] }} · Late after {{ c["late_minutes"] }} min</p>
+
+  <p class="counts">
+    <span class="badge Present">{{ present }} present</span>
+    <span class="badge Late">{{ late }} late</span>
+    <span class="badge {{ 'Live' if c['active'] else 'Ended' }}">{{ 'Live' if c['active'] else 'Ended' }}</span>
+  </p>
+
+  <p style="margin-top:20px;">
+    <a class="btn btn-primary" href="/class/{{ c['id'] }}/export.csv">Download CSV</a>
+    {% if c["active"] %}<a class="btn" href="/class/{{ c['id'] }}/board">Back to board</a>{% endif %}
+  </p>
+
+  {% if rows %}
+  <div class="card table-wrap">
+    <table>
+      <tr><th>Name</th><th>ID</th><th>Status</th><th>Time</th></tr>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r["name"] }}</td>
+        <td>{{ r["id_number"] }}</td>
+        <td><span class="badge {{ r['status'] }}">{{ r["status"] }}</span></td>
+        <td>{{ r["scanned_at"][11:16] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% else %}
+    <p class="muted" style="margin-top:20px;">Nobody has scanned yet.</p>
+  {% endif %}
+
+  <p class="backlink"><a href="/teacher">← All classes</a></p>
+
+</div>
+</body>
+</html>

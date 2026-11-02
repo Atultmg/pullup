@@ -1,0 +1,63 @@
+<!-- pullup - Message page: You're in / Already checked in / Class has ended etc. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --green-dark:#35704A; --line:#E9E1CF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:32px 22px;
+    -webkit-font-smoothing:antialiased; text-align:center;
+  }
+  .wrap{max-width:440px;margin:0 auto;}
+  .logo{font-size:34px;font-weight:700;letter-spacing:-1.5px;margin-bottom:26px;}
+
+  .emoji{font-size:64px;margin-top:10px;}
+  h1{font-size:30px;font-weight:600;margin-top:14px;}
+  h1.green{color:var(--green-dark);}
+  .text{color:var(--muted);font-size:17px;line-height:1.55;margin-top:10px;}
+
+  /* status pill — the class name is the status text itself */
+  .badge{
+    display:inline-block;border-radius:999px;font-weight:600;
+    font-size:19px;padding:7px 20px;margin-top:18px;
+  }
+  .Present{background:#E4F0E4;color:var(--green-dark);}
+  .Late{background:#FFE8E0;color:var(--accent);}
+  .Waiting{background:#FFF3D6;color:#8A5A0B;}
+
+  .btn{
+    display:block;background:var(--ink);color:#fff;text-decoration:none;
+    padding:16px;border-radius:16px;font-size:16.5px;font-weight:600;margin-top:30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo">pullup</div>
+
+  <div class="emoji">{{ "✅" if ok else "⚠️" }}</div>
+  <h1 class="{{ 'green' if ok else '' }}">{{ title }}</h1>
+  <p class="text">{{ text }}</p>
+
+  {% if status %}
+    <p><span class="badge {{ status }}">{{ status }}</span></p>
+  {% endif %}
+
+  <a class="btn" href="/dashboard">My dashboard</a>
+
+</div>
+</body>
+</html>

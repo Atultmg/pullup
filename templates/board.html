@@ -1,0 +1,180 @@
+<!-- pullup - Board page: big QR for the class + live counts + waiting approvals -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — {{ c["title"] }}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --green-dark:#35704A; --line:#E9E1CF;
+    --amber:#E8A33D; --amber-bg:#FFF8EC; --amber-text:#8A5A0B; --red:#C0392B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:22px; text-align:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    max-width:700px;margin:0 auto 24px auto;text-align:left;
+  }
+  .logo{font-size:28px;font-weight:700;letter-spacing:-1px;}
+  .topbar a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px;}
+  .topbar a:hover{text-decoration:underline;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:26px 24px;max-width:700px;margin:0 auto 20px auto;
+  }
+  h1{font-size:30px;font-weight:600;margin:0 0 6px 0;}
+  h2{font-size:19px;font-weight:600;}
+  .sub{color:var(--muted);margin-bottom:20px;font-size:14.5px;}
+
+  /* the big QR code students scan */
+  #qr{
+    background:#ffffff;padding:14px;border-radius:16px;
+    border:1px solid var(--line);width:300px;height:300px;
+  }
+  .counts{font-size:21px;margin-top:20px;font-weight:500;}
+  #present-count{color:var(--green);}
+  #late-count{color:var(--accent);}
+
+  /* waiting-for-approval box (soft amber, so the teacher notices it) */
+  #waiting-box{border:2px solid var(--amber);background:var(--amber-bg);}
+  #waiting-box h2{color:var(--amber-text);margin-bottom:6px;}
+  .waitrow, .recentrow{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:11px 0;text-align:left;font-size:15px;
+  }
+  .waitrow + .waitrow, .recentrow + .recentrow{border-top:1px solid var(--line);}
+  .waitrow form{display:inline;}
+  .approve{
+    font-family:inherit;background:var(--green);color:#fff;border:none;
+    padding:8px 16px;border-radius:10px;font-weight:600;cursor:pointer;font-size:14px;
+  }
+  .reject{
+    font-family:inherit;background:transparent;color:var(--red);
+    border:1.5px solid var(--red);padding:6.5px 14px;border-radius:10px;
+    font-weight:600;cursor:pointer;margin-left:8px;font-size:14px;
+  }
+  .btn-end{
+    font-family:inherit;background:var(--accent);color:#fff;border:none;
+    padding:14px 30px;border-radius:14px;font-size:16px;font-weight:600;
+    cursor:pointer;margin-top:4px;
+  }
+  .time{color:var(--muted);font-size:14px;}
+</style>
+</head>
+<body>
+
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="logo">pullup</div>
+    <a href="/teacher">← All classes</a>
+  </div>
+
+  <!-- the class + its QR code -->
+  <div class="card">
+    <h1>{{ c["title"] }}</h1>
+    <div class="sub">Started {{ start_at }} · Late after {{ late_at }}</div>
+    <img id="qr" src="/class/{{ c['id'] }}/qr.png" alt="Class QR code">
+    <div class="counts">
+      <b id="present-count">0</b> present · <b id="late-count">0</b> late
+    </div>
+  </div>
+
+  <!-- students who scanned but did not pass the Wi-Fi check -->
+  <div class="card" id="waiting-box" style="display:none;">
+    <h2>Waiting for approval</h2>
+    <div id="waiting-list"></div>
+  </div>
+
+  <!-- latest check-ins -->
+  <div class="card">
+    <h2>Latest check-ins</h2>
+    <div id="recent-list"><p class="time">No check-ins yet.</p></div>
+  </div>
+
+  <!-- end the class -->
+  <form method="POST" action="/class/{{ c['id'] }}/end">
+    <button class="btn-end" type="submit">End class</button>
+  </form>
+
+<script>
+  // the class this board belongs to (Flask fills in the number)
+  const classId = Number("{{ c['id'] }}");
+
+  // reload the QR image every 25 seconds (the code itself changes every 30 seconds)
+  setInterval(function () {
+    document.getElementById("qr").src = "/class/" + classId + "/qr.png?t=" + Date.now();
+  }, 25000);
+
+  // ask the server for fresh numbers, the recent list, and the waiting list
+  async function loadLive() {
+    try {
+      const res = await fetch("/class/" + classId + "/live");
+      const d = await res.json();
+
+      document.getElementById("present-count").textContent = d.present;
+      document.getElementById("late-count").textContent = d.late;
+
+      // recent check-ins
+      const recent = document.getElementById("recent-list");
+      recent.innerHTML = "";
+      if (d.recent.length === 0) {
+        recent.innerHTML = '<p class="time">No check-ins yet.</p>';
+      }
+      d.recent.forEach(function (r) {
+        const row = document.createElement("div");
+        row.className = "recentrow";
+        row.innerHTML = "<span>" + r.name + " — " + r.status + "</span>" +
+                        '<span class="time">' + r.time + "</span>";
+        recent.appendChild(row);
+      });
+
+      // waiting students, each with Approve and Reject buttons
+      const waiting = d.waiting || [];
+      const box = document.getElementById("waiting-box");
+      const list = document.getElementById("waiting-list");
+      box.style.display = waiting.length ? "block" : "none";
+      list.innerHTML = "";
+      waiting.forEach(function (w) {
+        const row = document.createElement("div");
+        row.className = "waitrow";
+        row.innerHTML = "<span>" + w.name + "</span>" +
+                        '<span class="time">' + w.time + "</span>";
+        const forms = document.createElement("span");
+
+        const approveForm = document.createElement("form");
+        approveForm.method = "POST";
+        approveForm.action = "/class/" + classId + "/approve/" + w.user_id;
+        approveForm.innerHTML = '<button class="approve" type="submit">Approve</button>';
+
+        const rejectForm = document.createElement("form");
+        rejectForm.method = "POST";
+        rejectForm.action = "/class/" + classId + "/reject/" + w.user_id;
+        rejectForm.innerHTML = '<button class="reject" type="submit">Reject</button>';
+
+        forms.appendChild(approveForm);
+        forms.appendChild(rejectForm);
+        row.appendChild(forms);
+        list.appendChild(row);
+      });
+    } catch (e) {
+      // if one update fails, the next one in 5 seconds usually works
+    }
+  }
+
+  loadLive();                 // run once straight away
+  setInterval(loadLive, 5000);  // then every 5 seconds
+</script>
+
+</body>
+</html>

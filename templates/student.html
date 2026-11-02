@@ -1,0 +1,98 @@
+<!-- pullup - Student page: greeting + how to check in + my attendance -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pullup — My attendance</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F6F1E6; --card:#FFFDF8; --ink:#1B1710; --muted:#7A7364;
+    --accent:#FF4424; --green:#4C9A58; --green-dark:#35704A; --line:#E9E1CF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Poppins',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); padding:22px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:700px;margin:0 auto;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+  .logo{font-size:28px;font-weight:700;letter-spacing:-1px;}
+  .topbar .right{font-size:14.5px;color:var(--muted);}
+  .topbar a{color:var(--ink);text-decoration:none;font-weight:500;margin-left:14px;}
+  .topbar a:hover{text-decoration:underline;}
+
+  h1{font-size:28px;font-weight:600;margin-bottom:18px;}
+  h2{font-size:19px;font-weight:600;margin:26px 0 12px 0;}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:22px;margin-bottom:20px;
+  }
+  .muted{color:var(--muted);font-size:14.5px;line-height:1.5;}
+
+  /* attendance table */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;}
+  th{
+    text-align:left;color:var(--muted);font-weight:500;font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.6px;padding:4px 10px 12px 0;
+  }
+  td{padding:12px 10px 12px 0;border-top:1px solid var(--line);white-space:nowrap;}
+  td:last-child, th:last-child{padding-right:0;}
+
+  /* status pills — the class name is the status text itself: Present / Late / Waiting */
+  .badge{
+    display:inline-block;padding:4px 12px;border-radius:999px;
+    font-size:12.5px;font-weight:600;
+  }
+  .Present{background:#E4F0E4;color:var(--green-dark);}
+  .Late{background:#FFE8E0;color:var(--accent);}
+  .Waiting{background:#FFF3D6;color:#8A5A0B;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- top bar -->
+  <div class="topbar">
+    <div class="logo">pullup</div>
+    <div class="right">
+      <span>{{ user["name"] }}</span>
+      <a href="/logout">Log out</a>
+    </div>
+  </div>
+
+  <h1>Hi, {{ user["name"].split()[0] }}</h1>
+
+  <div class="card">
+    <strong>How to check in</strong>
+    <p class="muted" style="margin-bottom:0;">Open your phone camera and scan the QR code on the board.</p>
+  </div>
+
+  <h2>My attendance</h2>
+  {% if history %}
+  <div class="card table-wrap">
+    <table>
+      <tr><th>Class</th><th>Teacher</th><th>When</th><th>Status</th></tr>
+      {% for h in history %}
+      <tr>
+        <td>{{ h["title"] }}</td>
+        <td>{{ h["teacher"] }}</td>
+        <td>{{ h["scanned_at"][:16] }}</td>
+        <td><span class="badge {{ h['status'] }}">{{ h["status"] }}</span></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% else %}
+    <p class="muted">Nothing yet. Scan the board QR in your next class.</p>
+  {% endif %}
+
+</div>
+</body>
+</html>
